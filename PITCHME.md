@@ -104,3 +104,36 @@ public void foo(){...}
   * Input stream, Output stream, java.sql.Connection
 * try-finally is ugly when used with more than one resource
 * try-with-resources - best way to close reources, resource should implement AutoClosable interface.
+
+---
+
+# Item 10
+* <b>Obey general contract when overridding equals</b>
+* Do not override if:
+  * Each instance of class is inherently unique. True for classes such as Thread that represent active entities rather than values.
+  * If there is no need for the class to provide logicial equality test.
+  * Superclass has already overwritten equals and superclass behaviour is appropriate for this class.
+  * Class is private or package private and you are sure the euals method will never be invoked.
+* when to overwrite equals:
+  * class has a notion of logical equaliity that differs from mere object identity and a superclass has not already overridden equals. Typically a value class.
+  * A value class that does not require the equals method to be overridden is a class that is instance controled to ensure at most one object exsits with each value. (Enum types)
+* Overriding equals must adhere to general contract, implements equivalence relation
+  * Reflexive: For any non null reference value x, `x.equals(x)` must return true.
+    * If voilated, the contatins method may just as well say the collection doesn't contain the instance you just added.
+  * Symmetric: For any non null reference value x and y, `x.equals(y)` must return true only if `y.equals(x)` returns true.
+  * Transitive: For any non null reference value x, y and z, if `x.equals(y)` returns true and `y.equals(z)` returns true then `x.equals(z) must return true`.
+  * Consistent: For any non-null reference values x and y, multiple invokations of x.equals(y) must consistently return true or consistently false, provided no information used in equals contract changes.
+    * mutable objects should remain equal or remain unequal as long as objects do not change. 
+    * immutable objects shoule remain equal or remain unequal for all time.
+  * For a non null reference x, `x.equals(null)` nust return false.
+* If the equals contract is voilated the program may crash or behave eratically.
+* Equivalence relation is an operator that partitions a set of elements into subsets whose elements are deemed equal to one another. These subsets are known as equivalence classes. From a user perspective, all equivalence classes must be interchangable.
+* <b>There is no way to extend an instantiable class and add a value compoenent while preserving the equals contract.</b>
+* Favour composition over inheritance.
+* Bummer: Timestamps and Dates must never be intermixed.
+* Do not write equals method that depends on unreliable resources. (URL equals depending on ip address). Equals method should only perform deterministic computations on memory resident objects.
+* equals method must use instanceof operator to check that its argument is of correct type.
+
+
+  
+  
