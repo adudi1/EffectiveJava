@@ -133,7 +133,88 @@ public void foo(){...}
 * Bummer: Timestamps and Dates must never be intermixed.
 * Do not write equals method that depends on unreliable resources. (URL equals depending on ip address). Equals method should only perform deterministic computations on memory resident objects.
 * equals method must use instanceof operator to check that its argument is of correct type.
-
-
+* Receipe for high quality equals method:
+  * use == operator to check if argument is a reference to this object
+  * use instanceof to check if he argument has the correct type
+  * cast the argument to its correct type
+  * For each significant field in a class, check if that field of an argument matches corresponding field of this object.
   
+ ` @override public boolean equals(Object o) {
+    if (this == o)
+        return true;
+    if (!(o instanceof PhoneNumber))
+        return false;
+    PhoneNumber pn = (PhoneNumber)o;
+    return pn.lineNum == linenNum && pn.prefix == prefix && pn.areacode == areacode; 
+ }`
+* Always override hashcode whenever you override equals
+* Do not substitue Object for another type in equals declaration
+* make sure of using override annotation, it will prevent you from making mistakes.
+* Autovalue framework automatically generates these methods.
+
+---
+# Item 11
+
+* <b>Always override hashcode when you override equals</b>
+* If two objects are equal according to the equals(object) method, then calling hashcode on the object must produce same integer result.
+* Its not required that hashcode to produce different values when two objects are equal, however that will improve the performance.
+* Recipe:
+  * Declare the int variable named result, and initialize it to the hashcode c for the significant field of your object.
+  * For every remaining significant field f of the object:
+    * compute int hashcode c for the field
+    * If premitive type, compute Type.hashcode(f), Type is boxed primitive class of f.
+    * If f is object, recursively invoke hashcode on the field. More complex is canonical representation. If null, use 0.
+    * If the field is an array, treat as if each significant element were a seperate field.
+    * combine the hashcode c computed as
+    `result = 31 * result +c;`
+  * return result
+  * (A nice property of 31 is multiplication can be replaced by a shift and substraction for better performance on some architectures: `31*i == (i << 5) - i `)
+* 
+` @override public int hashcode() { 
+int result = Short.hashcode(areacode);
+result = 31 * result + Short.hashcode(prefix);
+result = 31 * result + Short.hashcode(lineNum);
+return result;}`
+* Objects has static method hash that takes arbitary number of objects, however it is slow.
+`return Objects.hash(areacode, prefix, lineNum);`
+* Do not be tempted to exclude significant fields from hashcode computation to improve performance.
+* Don't provide a detailed specification for the value returned by hashcode, so clients can't resonably depend on it, this gives a felibility to change it.
+
+---
+
+# Item 12
+
+* <b>Always override toString</b>
+* providing a good toString implementation makes your class much more pleasant to use and makes systems using this class easier to debug.
+* A disadvantage of specifing format for the toString is, it is stuck forever, you will not have the flexibility to change it later.
+* clearly document intentions
+* provide access to the information contained in the value returned by toString
+* makes no sense to write toString for atic utility classes or enums
+* good to write for abstract classes whose subclasses share common tring representation
+* override object's toString implementation in every instantiable class, unless a superclass has already done so
+---
+
+# Item 13
+
+* <b>Override clone judiciously</b>
+* Clonable interface has flaw, it lacks clone method. 
+* Clonable interface determines the beahviour of Object's protected clone implementation: If a class implements Cloneable, Object's clone method returns a field-by-field copy of the object, otherwise it returns cloneNotSupported exception. (atypical use of interface, discouraged) 
+* In practice, a class implementing Clonable is expected to provide a properly functioning public clone method. 
+* If the superclass provides a well behaved clone method. First call super.clone.
+* Immutable classes should never provide a clone method
+* Like constructor, clone method should never invoke an overridable method on the clone under construction.
+* all classes that implement clonable hould override clone with a public method whose return type is class itself. This method should first call super.clone() and then fix any fields that needs fixing. 
+* A better approach to object copying is to provide a copy constructor or copy factory.
+---
+
+# Item 14
+* <b>Consider implementing Comparable</b>
+* compareTo is sole method in Comparable interface.
+* By implementing comparable the class indicates it contents have natural ordering.
+* CompareTo return -1, 0 or +1. Throws classCastException if the specified object type prevents it form being comapred to this object.
+  * x.compareTo(y) throws an expection only if y.comapreTo(x) throws exception.
+  * `(x.compareTo(y) == 0) == x.equals(y)` is strongly recommened, but not required. Classes that voilate this fact should clearly indicate it (This class has natural ordering that is inconsistent with equals).
+* There is no way to extend an instantiable class with a new value component while preserving the comapreTo contract. Write an unrelated class containing an instance of the first class. Then provide the view method to return the contained instance. 
+* Avoid use of < amd > operators. Instead use static compare methods in the boxed prmitive classes or the comparator construction methods in the Comparator interface.
   
+ 
