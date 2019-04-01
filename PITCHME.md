@@ -217,4 +217,53 @@ return result;}`
 * There is no way to extend an instantiable class with a new value component while preserving the comapreTo contract. Write an unrelated class containing an instance of the first class. Then provide the view method to return the contained instance. 
 * Avoid use of < amd > operators. Instead use static compare methods in the boxed prmitive classes or the comparator construction methods in the Comparator interface.
   
+ ---
+ // chapter 4
+ 
+ # Item 15
+ * <b> Minimize the accessibility of classes and members </b>
+ * A well designed API will hide all its details, cleanly seperating its API from implementation details. (Information hiding or Encapulation)
+ * + decouples the components that compromise the system.
+ * + components can be developed in parallel (isolation)
+ * + Decreases rick in developing large systems, as each individual component may prove successful even if the whole system isn't.
+ * Thumb Rule: Make each class and member as inaccessible as possible.
+ * If a top level class or an interface can be made package-private then it should be. (public is the other option for top level classes and interfaces (non nested)). So you can make it part of implementation, you can modify, replace or remove in subsequent releases, if public you have to support it forever.
+ * If a package-private top level class is only used by only one class, consider making the top-level class a private static nested class of the sole class that uses it.
+ * private—The member is accessible only from the top-level class where it is declared
+ * package-private—The member is accessible from any class in the package where it is declared. Technically known as default access, this is the access level you get if no access modifier is specified (except for interface members, which are public by default).
+ * protected—The member is accessible from subclasses of the class where it is declared and from any class in the package where it is declared.
+ * public—The member is accessible from anywhere.
+ * both private and package-private members are part of a class’s implementation and do not normally impact its exported API. These fields can, however, “leak” into the exported API if the class implements Serializable.
+ * If a method overrides a superclass method, it cannot have a more restrictive access level in the subclass than in the superclass. (the Liskov substitution principle)
+ * if a class implements an interface, all of the class methods that are in the interface must be declared public in the class
+ * it is acceptable to make a private member of a public class package-private in order to test it, but it is not acceptable to raise the accessibility any higher.
+ * classes with public mutable fields are not generally thread-safe
+ * Even if a field is final and refers to an immutable object, by making it public you give up the flexibility to switch to a new internal data representation in which the field does not exist.
+ *  You can expose constants via public static final fields. is critical that these fields contain either primitive values or references to immutable objects, a field containing a reference to a mutable object has all the disadvantages of a nonfinal field.
+ * Note that a nonzero-length array is always mutable, so it is wrong for a class to have a public static final array field, or an accessor that returns such a field. (frequent source of security holes)
+ * Beware of the fact that some IDEs generate accessors that return references to private array fields
+ Fix: `private static final Thing[] PRIVATE_VALUES = { ... };
+
+public static final List<Thing> VALUES =
+
+   Collections.unmodifiableList(Arrays.asList(PRIVATE_VALUES));`
+ or
+  `private static final Thing[] PRIVATE_VALUES = { ... };
+
+public static final Thing[] values() {
+
+    return PRIVATE_VALUES.clone();
+
+}`
+* Java 9: A module is a grouping of packages, like a package is a grouping of classes.
+* Public and protected members of unexported packages in a module are inaccessible outside the module; within the module, accessibility is unaffected by export declarations
+---
+
+# Item 16
+* <b>In public classes, use accessor methods not public fields</b>
+* degenerate classes: that serve no purpose other than to group instance fields
+* 
+
+
+ 
  
