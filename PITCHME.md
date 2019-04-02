@@ -262,7 +262,53 @@ public static final Thing[] values() {
 # Item 16
 * <b>In public classes, use accessor methods not public fields</b>
 * degenerate classes: that serve no purpose other than to group instance fields
-* 
+* If the class is exposed outside its pacakge, provide accessor methods.
+* If the class is private nested or pacakge-private then there is nothing inherently wrong with exposing data fields.
+* public classes should never expose mutable fields. It is less harmful, though still questionable, for public classes to expose immutable fields.
+---
+
+# Item 17
+* <b>Minimize mutability</b>
+* To make a class immutable:
+  * Don’t provide methods that modify the object’s state
+  * Ensure that the class can’t be extended
+    * final class
+    * static factory method (+ caching)
+  * Make all fields final
+    * may be relaxed to improve performance (however, should not produce externally visible change). Also applies to point 1.
+  * Make all fields private
+  * Ensure exclusive access to any mutable components. ( If your class has any fields that refer to mutable objects, Never initialize such a field to a client-provided object reference or return the field from an accessor. Make defensive copies in constructors, accessors, and readObject methods)
+* Immutable objects are inherently thread-safe; they require no synchronization.
+* you need not and should not provide a clone method or copy constructor on an immutable class.
+* Not only can you share immutable objects, but they can share their internals.
+* Immutable objects make great building blocks for other objects
+* Immutable objects provide failure atomicity for free
+* The major disadvantage of immutable classes is that they require a separate object for each distinct value.
+* There are two approaches to coping with generating a new object at every step. 
+  * The first is to guess which multistep operations will be commonly required and to provide them as primitives. If a multistep operation is provided as a primitive, the immutable class does not have to create a separate object at each step.
+  * if you can not accurately predict which complex operations clients will want to perform on your immutable class, then your best bet is to provide a public mutable companion class. The main example of this approach in the Java platform libraries is the String class, whose mutable companion is StringBuilder
+* It was not widely understood that immutable classes had to be effectively final when BigInteger and BigDecimal were written. If you write a class whose security depends on the immutability of a BigInteger or BigDecimal argument from an untrusted client, you must check to see that the argument is a “real” BigInteger or BigDecimal, rather than an instance of an untrusted subclass. If it is the latter, you must defensively copy it under the assumption that it might be mutable.
+* If a class cannot be made immutable, limit its mutability as much as possible. declare every field private final unless there’s a good reason to do otherwise.
+* Constructors should create fully initialized objects with all of their invariants established.
+---
+
+# Item 18
+<b>  Favor composition over inheritance </b>
+* It is safe to use inheritance within a package, where the subclass and the superclass implementations are under the control of the same programmers.
+* It is also safe to use inheritance when extending classes specifically designed and documented for extension
+* Inheriting from ordinary concrete classes across package boundaries, however, is dangerous (implementation inheritance)
+* Unlike method invocation, inheritance violates encapsulation (subclass depends on the implementation details of its superclass for its proper function)
+* Ex: InstrumentedSet extends ForwardingSet. The InstrumentedSet class is known as a wrapper class because each InstrumentedSet instance contains (“wraps”) another Set instance. This is also known as the Decorator pattern 
+* The disadvantages of wrapper classes are few. One caveat is that wrapper classes are not suited for use in callback frameworks, wherein objects pass self-references to other objects for subsequent invocations (“callbacks”). Because a wrapped object doesn’t know of its wrapper, it passes a reference to itself (this) and callbacks elude the wrapper. This is known as the SELF problem.
+* Inheritance propagates any flaws in the superclass’s API, while composition lets you design a new API that hides these flaws.
+---
+# Item 19
+<b>Design and document for inheritance or else prohibit it</b>
+* For each public or protected method, the documentation must indicate which overridable methods the method invokes, in what sequence, and how the results of each invocation affect subsequent processing. 
+* A method that invokes overridable methods contains a description of these invocations at the end of its documentation comment. Javadoc tag @implSpec
+* To document a class so that it can be safely subclassed, you must describe implementation details that should otherwise be left unspecified. (this violate the dictum that good API documentation should describe what a given method does and not how it does it)
+* This tag should be enabled by default, but as of Java 9, the Javadoc utility still ignores it unless you pass the command line switch -tag "apiNote:a:API Note:".
+* The only way to test a class designed for inheritance is to write subclasses.
 
 
  
