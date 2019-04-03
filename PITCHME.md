@@ -309,7 +309,7 @@ public static final Thing[] values() {
 * To document a class so that it can be safely subclassed, you must describe implementation details that should otherwise be left unspecified. (this violate the dictum that good API documentation should describe what a given method does and not how it does it)
 * This tag should be enabled by default, but as of Java 9, the Javadoc utility still ignores it unless you pass the command line switch -tag "apiNote\:a\:API Note:".
 * The only way to test a class designed for inheritance is to write subclasses.
-
-
+* to allow inheritance, Constructors must not invoke overridable methods, directly or indirectly. he superclass constructor runs before the subclass constructor, so the overriding method in the subclass will get invoked before the subclass constructor has run.
+* 
  
  
