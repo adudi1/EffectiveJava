@@ -351,5 +351,36 @@ public static final Thing[] values() {
 * Bad example is constant interface. Contains no methods; it consists solely of static final fields, each exporting a constant.
 ----
 
+# Item 23
+<b>Prefer class hierarchies to tagged classes</b>
+* Occasionally you may run across a class whose instances come in two or more flavours and contain a tag field indicating the flavour of the instance. Thye have numerous short comings. They are verbose, error-prone and inefficient.
+* use class hierarchy instead. Abstract class and subclasses.
+----
+
+# Item 24
+<b> Favor static member classes over nonstatic</b>
+* Four types of nested classes: static member classes, nonstatic member classes, anonymous classes and local classes. All but the first is known as inner classes.
+* A static member class can be thought of as an ordinary class that happens to be declared inside another class and has access to all the enclosing class members, even those declared private. A static member class is a static member of its enclosing class and obeys the same accessibility rules as other static members. If it is declared private, it is accessible only within the enclosing class and so forth. One common use of static memeber class is a public helper class, useful only in conjunction with its outer class. For Ex: Operation enum should be a public static memebr of the Calculator class. so clients can refer to operations like Calculator.Operation.PLUS.
+* static and nonstatic nested classes are very different. 
+* Within instance methods of a nonstatic member class, you can invoke methods on the enclosing instance or obtain a reference to the enclosing instance using the qualified `this` construct.
+* The association between a non static member class instance and its enclosing instance is established when the member class instance is created and cannot be modified thereafter. Normally, the association is established by invoking a nonstatic member class constructor from within an instance method of the enclosing class.
+* One common use of a nonstatic member class is to define an Adapter that allows an instance of the outer class to be viewed as an instance of some unrelated class. For eX: implementations of the Map interface typically use nonstatic member classes to implement thier collection views, which are returned by Map's keySet, entrySet and values methods. Similary, implementations of the collevtuin interfaces, such as set and list typically use nonstatic memebr classes to implement their iterators.
+* If you declare a memebr class that does not require access to an enclosing instance, always put the static modifier in its declaration.
+* Anonymous class has no name, It is not a member of its enclosing class. Anonymous classes are permitted at any point in the code where an expiression is legal. Anonymous classes have enclosing instances if and only if they occur in a non static context. But even of they occur in a static context, they cannot have any static members other than constant variables, which are final primitive or sting fields initialized to constant expressions.
+* There are many limitations on applicability of anonymous classes.
+  - you cannot instantiate them except at the point they are declared.
+  - You can't perform instanceof tests or do anything else that required you to name the class.     - You cannot declare anonymous class to implement multiple interfaces or to extend a class and implement an interface at the same time.
+  - Clients of anonymous class can't invoke any members except those it inherits from its supertype.
+* Local classes are the least frequently used of the four kinds of nested classes. Can be declared anywhere a local variable can be declared and obeys same scoping rules.  They have names and can be used repeatedly. They have enclosing instances only if they are defined in a nonstatic conetexxt and they cannot contain static memebrs.
+----
+
+# Item 25
+<b>Limit source files to a single top level class</b>
+* The risks stem from the fact that defining multiple top-level classes in a source file makes it possible to provide multiple definitions for a class. Whcih definition gets used is affected by the order in which the source files are passed to the compiler.
+----
+
+  
+
+
  
  
