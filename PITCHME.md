@@ -334,6 +334,22 @@ public static final Thing[] values() {
 
 ----
 
+# Item 21
+
+<b>Design interfaces for prosperity</b>
+* Prior to Java 8 it was impossible to add methods to an interface without breaking exisiting implementations.
+* In java 8, the default method construct is added with the intent of allowing additional to exisiting interfaces. However, adding new methods to existing interface is fraught with risk.
+* Because there is no gaurantee that these methods will work work in the preexisiting implementations. Default methods are injected into existing implementations without the knowledge or consent of their implementors.
+* In Java 8 default methods were added into core collection interfaces to support use of lambdas
+* But it is not always possible to write default method that maintains all invariants of every conceivable implementation.
+* Default methods are not designed to support removing or change signatures of exisiting inteface methods. Neither is possible without breaking exisitng clients.
+----
+
+# Item 22
+<b>Use interface only to define types</b>
+* When a class implements an interface, the interface serves as a type that can be used to refer to instances of the class. That a class implements an interface should therefore say something about what a client can do with instances of the class. It is inappropriate to define an interface for any other purpose.
+* Bad example is constant interface. Contains no methods; it consists solely of static final fields, each exporting a constant.
+----
 
  
  
