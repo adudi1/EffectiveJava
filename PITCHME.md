@@ -309,7 +309,31 @@ public static final Thing[] values() {
 * To document a class so that it can be safely subclassed, you must describe implementation details that should otherwise be left unspecified. (this violate the dictum that good API documentation should describe what a given method does and not how it does it)
 * This tag should be enabled by default, but as of Java 9, the Javadoc utility still ignores it unless you pass the command line switch -tag "apiNote\:a\:API Note:".
 * The only way to test a class designed for inheritance is to write subclasses.
-* to allow inheritance, Constructors must not invoke overridable methods, directly or indirectly. The superclass constructor runs before the subclass constructor, so the overriding method in the subclass will get invoked before the subclass constructor has run.
-* 
+* to allow inheritance, Constructors must <b>not</b> invoke overridable methods, directly or indirectly. The superclass constructor runs before the subclass constructor, so the overriding method in the subclass will get invoked before the subclass constructor has run.
+* However, it is safe to invoke private methods, final methods and static methods, none od which are overridable, from a constructor.
+* Not a good idea for a class designed for inheritance to implement either Cloneable or Serializable interfaces, however special actions may be needed to allow subclasses to implement these interfaces. Ref Item 13 and Item 86.
+ - clone and readObject methods behave like constructors, they should not invoke any overridable method directly or indirectly.
+ - In case of serializable, readResolve or writeReplace methods must be made protected rather than private. If these methods are private they will be silently ignored by subclasses.
+* wrapper class pattern (Item 18) provides a superior alternative to inheritance for augmenting the functionality.
+* to eliminate class's self use of overridable methods mechanically, move body of each overridable method to a private helper mthod and have each overridable method invoke its private helper method. Then replace each self use of an overridable method with a direct invocation of the overrridable method's private helper method.
+----
+
+# Item 20
+<b>Prefer inferfaces to abstract classes</b>
+* Form Java 8 default methods both interfaces and abstract classes allow you to provide implementations for some instancce methods. Major difference is that to implement the type defined by an abstract class, a class must be a subclass of the abstract class.
+* Exisiting classes can be retrofitted to implement a new interface.
+* Interfaces are ideal for defining mixins. - addition to its primary type.
+* Interfaces allow for the construction of nonhierarchical type frameworks.
+* Interfaces enable safe, powerful functionality enhancements (via wrapper class idiom Item 18)
+* use default methods for assistance. If default methods are implemented be sure to docuemnt them for inheritancce using @implSpec tag
+* There are limits on how much implmentation assistance you can provide with default methods. You are not permitted to provide default methods for object methods such as equals, hashcode and toString. You can't add default methods to an interface that you don't control.
+* You can combine the advantages of interfaces and abstract classes by providing an abstract skeletal implementation class to go with an interface. Template method pattern.
+* Skeletal implementation classes - AbstractCollection, AbstractSet, AbstractList, AbstractMap
+* The class implementing the interface can forward invocations of interface methods to a contained instance of private inner class that extends the skeletal implementation. This technique is known as Simulated multiple inheritance.
+* A minor variant of skeletal implementation is simple simple implementation. Difference is that it is not Abstract. Simplest possible implemntation, you can use as it stands or subclass it as circumstances warrant.
+
+----
+
+
  
  
